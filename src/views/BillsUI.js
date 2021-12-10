@@ -20,9 +20,9 @@ const row = (bill) => {
 }
 
 const rows = (data) => {
-  /**
-   * descending sort function
-   */
+  
+  // descending sort function
+  
   if (data && data.length) {
     data.sort(function (a, b) {
       return new Date(b.date) - new Date(a.date);

@@ -9,11 +9,14 @@ import firebase from "../__mocks__/firebase";
 import { ROUTES, ROUTES_PATH } from "../constants/routes";
 
 describe("Given I am connected as an employee", () => {
+
   describe("When I am on NewBill Page", () => {
     test("Then it should render NewBill page", () => {
       const html = NewBillUI()
+      //inject "Envoyer une note de frais" form html in dom
       document.body.innerHTML = html
       const newBillForm = screen.getByTestId('form-new-bill')
+      // newbillform should be render in dom
       expect(newBillForm).toBeTruthy()
     })
 
@@ -25,6 +28,7 @@ describe("Given I am connected as an employee", () => {
         Object.defineProperty(window, "localStorage", {
           value: localStorageMock,
         })
+        // sets employee user
         window.localStorage.setItem(
           "user",
           JSON.stringify({
@@ -48,9 +52,41 @@ describe("Given I am connected as an employee", () => {
         fireEvent.submit(submitBtn)
         expect(handleSubmit).toHaveBeenCalled()
       })
+
+      test('Then the error message should be display', async () => {
+        // Build user interface
+        const html = NewBillUI();
+        document.body.innerHTML = html;
+
+        // Init newBill
+        const newBill = new NewBill({
+            document,
+        });
+
+        // Mock of handleChangeFile
+        const handleChangeFile = jest.fn(() => newBill.handleChangeFile);
+
+        // Add Event and fire
+        const inputFile = screen.getByTestId('file');
+        inputFile.addEventListener('change', handleChangeFile);
+        fireEvent.change(inputFile, {
+            target: {
+                files: [new File(['bill.pdf'], 'bill.pdf', {
+                    type: 'image/pdf'
+                })],
+            }
+        });
+
+        // handleChangeFile function must be called
+        expect(handleChangeFile).toBeCalled();
+        // The name of the file should be 'bill.pdf'
+        expect(inputFile.files[0].name).toBe('bill.pdf');
+        // expect error data to be true
+        expect(document.querySelector(`input[data-testid="file"]`).getAttribute("data-error")).toBe("true")
+      });
     })
 
-    describe('When I upload a correct file', () => {
+    describe('When I upload a correct format file (png, jpeg or jpg)', () => {
       test('Then the name of the file should be present in the input file', () => {
         document.body.innerHTML = NewBillUI()
         const inputFile = screen.getByTestId('file')
@@ -64,6 +100,8 @@ describe("Given I am connected as an employee", () => {
         })
         userEvent.upload(inputFile, inputData.file)
         expect(inputFile.files[0]).toStrictEqual(inputData.file)
+        // expect error data to be true
+        expect(document.querySelector(`input[data-testid="file"]`).getAttribute("data-error")).toBe("true")
       })
     })
   })
@@ -73,6 +111,7 @@ describe("Given I am connected as an employee", () => {
 describe("Given I am a user connected as Employee", () => {
 	describe("When I create a new bill", () => {
 	  test("add bill to mock API POST", async () => {
+      //creates a newbill object
 		const newBill = {
 		  id: "hotelfacture20211121employee100",
 		  vat: "20",
@@ -95,19 +134,21 @@ describe("Given I am a user connected as Employee", () => {
 		expect(bills.data.length).toBe(5)
 	  });
 	  test("add bill to API and fails with 404 message error", async () => {
-		firebase.post.mockImplementationOnce(() => 
-			Promise.reject(new Error("Erreur 404")))
-		const html = BillsUI({ error: "Erreur 404" })
-		document.body.innerHTML = html;
-		const message = await screen.getByText(/Erreur 404/)
-		expect(message).toBeTruthy();
+      firebase.post.mockImplementationOnce(() => 
+        Promise.reject(new Error("Erreur 404")))
+      // build up bill page with error 404
+      const html = BillsUI({ error: "Erreur 404" })
+      document.body.innerHTML = html;
+      // waits for the error message to be caught
+      const message = await screen.getByText(/Erreur 404/)
+      expect(message).toBeTruthy();
 	  })
 	  test("add bill to API and fails with 500 message error", async () => {
-		firebase.post.mockImplementationOnce(() => Promise.reject(new Error("Erreur 500")))
-		const html = BillsUI({ error: "Erreur 500" })
-		document.body.innerHTML = html
-		const message = await screen.getByText(/Erreur 500/)
-		expect(message).toBeTruthy()
+      firebase.post.mockImplementationOnce(() => Promise.reject(new Error("Erreur 500")))
+      const html = BillsUI({ error: "Erreur 500" })
+      document.body.innerHTML = html
+      const message = await screen.getByText(/Erreur 500/)
+      expect(message).toBeTruthy()
 	  });
 	});
 })

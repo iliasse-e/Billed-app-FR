@@ -14,28 +14,13 @@ const onNavigate = (pathname) => {
 }
 
 describe("Given I am connected as an employee", () => {
-  describe("When I am on Bills page but it is loading", () => {
-    test("Then, Loading page should be rendered", () => {
-      const html = BillsUI({ loading: true })
-      document.body.innerHTML = html
-
-      expect(screen.getAllByText("Loading...")).toBeTruthy()
-    })
-  })
-
-  describe("When I am on Bills page but back-end send an error message", () => {
-    test("Then, Error page should be rendered", () => {
-      const html = BillsUI({ error: "some error message" })
-      document.body.innerHTML = html
-
-      expect(screen.getAllByText("Erreur")).toBeTruthy()
-    })
-  })
 
   describe("When I am on Bills Page", () => {
     beforeEach(() => {
+      //displays bills in dom
       document.body.innerHTML = BillsUI({ data: bills })
 
+      // sets the user as employee
       Object.defineProperty(window, "localStorage", { value: localStorageMock })
       window.localStorage.setItem("user", JSON.stringify({
         type: "Employee"
@@ -156,7 +141,7 @@ describe("Given I am connected as an employee", () => {
         // handleClickIconEye function must be called
         expect(handleClickIconEye).toHaveBeenCalled();
         const modaleImgSource = document.querySelector("#modaleFile img").src;
-        // The modal must be present
+        // The image source must be not null
         expect(modaleImgSource).not.toBe(null);
         })
       })

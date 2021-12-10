@@ -22,8 +22,9 @@ export default class NewBill {
     const fileType = fileName.split(".").pop().toLowerCase()
 	  const allowedType = /(png|jpg|jpeg)/g
 
-	if(fileType.match(allowedType)){
     /* istanbul ignore next */
+	if(fileType.match(allowedType)){
+    this.document.querySelector(`input[data-testid="file"]`).setAttribute("data-error", "false")
 		this.firestore
 		.storage
 		.ref(`justificatifs/${fileName}`)
@@ -36,6 +37,7 @@ export default class NewBill {
 	} else {
 		alert("Format invalide, veuillez joindre une image png, jpeg, jpg")
 		this.document.querySelector(`input[data-testid="file"]`).value = null
+    this.document.querySelector(`input[data-testid="file"]`).setAttribute("data-error", "true")
 	}
   }
   handleSubmit = e => {
