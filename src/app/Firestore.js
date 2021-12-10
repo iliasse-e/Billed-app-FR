@@ -1,4 +1,4 @@
-class Firestore {
+export class Firestore {
   constructor() {
     this.store = window.firebase ? window.firebase.firestore() : () => null
     this.storage = window.firebase ? window.firebase.storage() : () => null

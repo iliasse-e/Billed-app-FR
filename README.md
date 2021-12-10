@@ -10,6 +10,19 @@ Allez au repo cloné :
 $ cd Billed-app-FR
 ```
 
+Installez la dernière version de nodejs  :
+```
+$ node -v 
+```
+(si la version v10.19.0) :
+```
+$ sudo apt-get purge nodejs
+
+$ curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+
+$ sudo apt install nodejs
+```
+
 Installez les packages npm (décrits dans `package.json`) :
 ```
 $ npm install
@@ -40,11 +53,22 @@ Installez jest-cli :
 
 ```
 $npm i -g jest-cli
+
 $jest src/__tests__/your_test_file.js
+alternative : jest --coverage --noStackTrace --silent src/test/nom-du-fichier.js
 ```
 
 **Comment voir la couverture de test :**
 
-`http://127.0.0.1:8080/coverage/lcov-report/`
+``
+$ node_modules/.bin/jest --coverage
+``
 
+**Si erreur :**
 
+"ReferenceError: global is not defined"
+Désinstaller le client jest-cli :
+$ npm uninstall jest-cli
+
+Installer en spécifiant la version présente dans le package.json
+$ npm i -g jest-cli@26.1.0 (remplacer les chiffres si la version du fichier package.json ne correspond pas à la suivante)
